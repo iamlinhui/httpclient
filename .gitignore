@@ -25,3 +25,5 @@
 /.nb-gradle/
 
 */test/
+
+dependency-reduced-pom.xml
