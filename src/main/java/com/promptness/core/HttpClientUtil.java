@@ -92,6 +92,11 @@ public class HttpClientUtil {
 		return doGet(uri.toString(), cookies);
 	}
 	
+	public HttpResult doGet(String url, FileOutputStream fileOutputStream) throws Exception {
+		return doGet(url, null, null, fileOutputStream);
+	}
+		
+	
 	public HttpResult doGet(String url,Map<String, String> param, List<Cookie> cookies,FileOutputStream fileOutputStream) throws Exception {
 		
 		URIBuilder builder = new URIBuilder(url);
@@ -120,6 +125,10 @@ public class HttpClientUtil {
 		}
 		
 		return HttpResult.SUCCESS;
+	}
+	
+	public HttpResult doPost(String url, FileOutputStream fileOutputStream) throws Exception {
+		return doPost(url, fileOutputStream);
 	}
 	
 	public HttpResult doPost(String url, Map<String, String> param, List<Cookie> cookies, FileOutputStream fileOutputStream)throws Exception {
