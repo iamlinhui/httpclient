@@ -1,27 +1,11 @@
 package com.promptness.core;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.alibaba.fastjson.JSON;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
@@ -31,319 +15,302 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import com.alibaba.fastjson.JSON;
+import java.io.*;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Lynn
  */
 public class HttpClientUtil {
 
-	private final static Charset UTF_8 = Charset.forName("UTF-8");
+    private final static Charset UTF_8 = Charset.forName("UTF-8");
 
-	private final CloseableHttpClient httpClient;
+    private final CloseableHttpClient httpClient;
 
-	private final RequestConfig requestConfig;
+    private final RequestConfig requestConfig;
 
-	public HttpClientUtil(CloseableHttpClient httpClient, RequestConfig requestConfig) {
-		this.httpClient = httpClient;
-		this.requestConfig = requestConfig;
-	}
-	
-	public HttpClientUtil(HttpClientProperties properties) {
-		HttpClientAutoConfiguration configuration = new HttpClientAutoConfiguration(properties);
-		this.httpClient = configuration.httpClient();
-		this.requestConfig = configuration.requestConfig();
-	}
-	
-	public HttpClientUtil() {
-		HttpClientAutoConfiguration configuration = new HttpClientAutoConfiguration();
-		this.httpClient = configuration.httpClient();
-		this.requestConfig = configuration.requestConfig();
-	}
+    public HttpClientUtil(CloseableHttpClient httpClient, RequestConfig requestConfig) {
+        this.httpClient = httpClient;
+        this.requestConfig = requestConfig;
+    }
 
-	public HttpResult doGet(String url) throws Exception {
-		HttpGet httpGet = new HttpGet(url);
-		httpGet.setConfig(requestConfig);
-		try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-			return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), UTF_8));
-		}
-	}
+    public HttpClientUtil(HttpClientProperties properties) {
+        HttpClientAutoConfiguration configuration = new HttpClientAutoConfiguration(properties);
+        this.httpClient = configuration.httpClient();
+        this.requestConfig = configuration.requestConfig();
+    }
 
-	public HttpResult doGet(String url, List<Cookie> cookies) throws Exception {
-		HttpGet httpGet = new HttpGet(url);
-		setCookies(cookies, httpGet);
-		httpGet.setConfig(requestConfig);
-		try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-			return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), UTF_8));
-		}
-	}
-	
-	public HttpResult doGet(String url, Map<String, String> param) throws Exception {
-		return doGet(url, param, null);
-	}
+    public HttpClientUtil() {
+        HttpClientAutoConfiguration configuration = new HttpClientAutoConfiguration();
+        this.httpClient = configuration.httpClient();
+        this.requestConfig = configuration.requestConfig();
+    }
 
-	public HttpResult doGet(String url, Map<String, String> param, List<Cookie> cookies) throws Exception {
-		// 定义请求的参数
-		URIBuilder builder = new URIBuilder(url);
-		if (param != null && !param.isEmpty()) {
-			param.forEach(builder::setParameter);
-		}
-		URI uri = builder.build();
-		return doGet(uri.toString(), cookies);
-	}
-	
-	public HttpResult doGet(String url, FileOutputStream fileOutputStream) throws Exception {
-		return doGet(url, null, null, fileOutputStream);
-	}
-		
-	
-	public HttpResult doGet(String url,Map<String, String> param, List<Cookie> cookies,FileOutputStream fileOutputStream) throws Exception {
-		
-		URIBuilder builder = new URIBuilder(url);
-		if (param != null && !param.isEmpty()) {
-			param.forEach(builder::setParameter);
-		}
-		
-		URI uri = builder.build();
-		
-		HttpGet httpGet = new HttpGet(uri.toString());
-		
-		setCookies(cookies, httpGet);
-		httpGet.setConfig(requestConfig);
-		try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				InputStream inputStream = response.getEntity().getContent();
-				BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-				byte[] bs = new byte[1024];
-				int len;
-				while ((len = inputStream.read(bs)) != -1) {
-					bufferedOutputStream.write(bs, 0, len);
-				}
-				bufferedOutputStream.close();
-				inputStream.close();
-			}
-		}
-		
-		return HttpResult.SUCCESS;
-	}
-	
-	public HttpResult doPost(String url, FileOutputStream fileOutputStream) throws Exception {
-		return doPost(url, fileOutputStream);
-	}
-	
-	public HttpResult doPost(String url, Map<String, String> param, List<Cookie> cookies, FileOutputStream fileOutputStream)throws Exception {
+    public HttpResult doGet(String url) throws Exception {
+        return doGet(url, null, null, null);
+    }
 
-		HttpPost httpPost = new HttpPost(url);
+    public HttpResult doGet(String url, List<Cookie> cookies) throws Exception {
+        return doGet(url, null, cookies, null);
+    }
 
-		setCookies(cookies, httpPost);
-		
-		setEntityData(param, httpPost);
-		
-		httpPost.setConfig(requestConfig);
-		try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				InputStream inputStream = response.getEntity().getContent();
-				BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-				byte[] bs = new byte[1024];
-				int len;
-				while ((len = inputStream.read(bs)) != -1) {
-					bufferedOutputStream.write(bs, 0, len);
-				}
-				bufferedOutputStream.close();
-				inputStream.close();
-				
-				return HttpResult.SUCCESS;
-			}
-			
-			return HttpResult.getErrorHttpResult(response.getStatusLine().getStatusCode());
-		}
-	}
+    public HttpResult doGet(String url, Map<String, String> param) throws Exception {
+        return doGet(url, param, null, null);
+    }
 
-	public HttpResult doPost(String url, List<Cookie> cookies) throws Exception {
-		// 创建http POST请求
-		return doPost(url, null, cookies);
-	}
+    public HttpResult doGet(String url, Map<String, String> param, List<Cookie> cookies) throws Exception {
+        return doGet(url, param, cookies, null);
+    }
 
-	public HttpResult doPost(String url, Map<String, String> param) throws Exception {
-		// 创建http POST请求
-		return doPost(url, param, null);
-	}
+    public HttpResult doGet(String url, FileOutputStream fileOutputStream) throws Exception {
+        return doGet(url, null, null, fileOutputStream);
+    }
 
-	public HttpResult doPost(String url, Map<String, String> param, List<Cookie> cookies) throws Exception {
-		// 创建http POST请求
-		HttpPost httpPost = new HttpPost(url);
-		setCookies(cookies, httpPost);
+    public HttpResult doGet(String url, Map<String, String> param, FileOutputStream fileOutputStream) throws Exception {
+        return doGet(url, param, null, fileOutputStream);
+    }
 
-		setEntityData(param, httpPost);
-		
-		httpPost.setConfig(requestConfig);
-		try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-			// 执行请求
-			if (response.getEntity() != null) {
-				return new HttpResult(response.getStatusLine().getStatusCode(),EntityUtils.toString(response.getEntity(), UTF_8));
-			}
-			return HttpResult.ENTITY_EMPTY;
-		}
-		
-	}
+    public HttpResult doGet(String url, Map<String, String> param, List<Cookie> cookies, FileOutputStream fileOutputStream) throws Exception {
 
-	public HttpResult doPost(String url) throws Exception {
-		return doPost(url, null, null);
-	}
-	
-	public HttpResult doPostFile(String url, Map<String, String> params, List<Cookie> cookies, Map<String, File> files) throws Exception {
-		
-		HttpPost httpPost = new HttpPost(url);
-		
-		setCookies(cookies, httpPost);
-		
-		MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
-		
-		if (files != null && !files.isEmpty()) {
-			files.forEach((k, v) -> multipartEntityBuilder.addBinaryBody(k, v));
-		}
-		
-		if (params != null && !params.isEmpty()) {
-			params.forEach((k, v) -> multipartEntityBuilder.addTextBody(k, v, ContentType.TEXT_PLAIN.withCharset(UTF_8)));
-		}
-			
-		httpPost.setEntity(multipartEntityBuilder.build());
-		
-		try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-			// 执行请求
-			if (response.getEntity() != null) {
-				return new HttpResult(response.getStatusLine().getStatusCode(),EntityUtils.toString(response.getEntity(), UTF_8));
-			}
-			return HttpResult.ENTITY_EMPTY;
-		}
-		
-	}
-	
-	
+        URIBuilder builder = new URIBuilder(url);
+        if (param != null && !param.isEmpty()) {
+            for (Map.Entry<String, String> entry : param.entrySet()) {
+                builder.setParameter(entry.getKey(), entry.getValue());
+            }
+        }
 
-	public HttpResult doPostJson(String url, Map<String, String> param) throws Exception {
-		// 创建http POST请求
-		HttpPost httpPost = new HttpPost(url);
-		httpPost.setConfig(this.requestConfig);
-		if (param != null) {
-			// 构造一个字符串的实体
-			StringEntity stringEntity = new StringEntity(JSON.toJSONString(param), ContentType.APPLICATION_JSON);
-			// 将请求实体设置到httpPost对象中
-			httpPost.setEntity(stringEntity);
-		}
-		try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-			// 执行请求
-			if (response.getEntity() != null) {
-				return new HttpResult(response.getStatusLine().getStatusCode(),EntityUtils.toString(response.getEntity(), UTF_8));
-			}
-			return HttpResult.ENTITY_EMPTY;
-		}
-	}
+        URI uri = builder.build();
 
-	public <T> T doPostJson(String url, Map<String, String> param, Class<T> clazz) throws Exception {
-		// 创建http POST请求
-		HttpPost httpPost = new HttpPost(url);
-		httpPost.setConfig(this.requestConfig);
-		if (param != null) {
-			// 构造一个字符串的实体
-			StringEntity stringEntity = new StringEntity(JSON.toJSONString(param), ContentType.APPLICATION_JSON);
-			// 将请求实体设置到httpPost对象中
-			httpPost.setEntity(stringEntity);
-		}
-		try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-			// 执行请求
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK && response.getEntity() != null) {
-				return JSON.parseObject(EntityUtils.toString(response.getEntity(), UTF_8), clazz);
-			}
-		}
-		return null;
-	}
+        HttpGet httpGet = new HttpGet(uri.toString());
 
-	public HttpResult doPostJson(String url, Map<String, String> param, List<Cookie> cookies) throws Exception {
-		// 创建http POST请求
-		HttpPost httpPost = new HttpPost(url);
-		httpPost.setConfig(this.requestConfig);
-		setCookies(cookies, httpPost);
-		if (param != null) {
-			// 构造一个字符串的实体
-			StringEntity stringEntity = new StringEntity(JSON.toJSONString(param), ContentType.APPLICATION_JSON);
-			// 将请求实体设置到httpPost对象中
-			httpPost.setEntity(stringEntity);
-		}
-		try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-			// 执行请求
-			if (response.getEntity() != null) {
-				return new HttpResult(response.getStatusLine().getStatusCode(),EntityUtils.toString(response.getEntity(), UTF_8));
-			}
-			return HttpResult.ENTITY_EMPTY;
-		}
-	}
+        setCookies(cookies, httpGet);
+        httpGet.setConfig(requestConfig);
+
+        if (fileOutputStream == null) {
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), UTF_8));
+            }
+        } else {
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    outFile(fileOutputStream, response);
+                }
+            }
+            return HttpResult.SUCCESS;
+        }
+    }
 
 
+    public HttpResult doPost(String url) throws Exception {
+        return doPost(url, null, null, null);
+    }
 
-	public HttpResult doPut(String url, Map<String, String> param) throws IOException {
-		// 创建http POST请求
-		HttpPut httpPut = new HttpPut(url);
-		httpPut.setConfig(this.requestConfig);
-		
-		setEntityData(param, httpPut);
-		
-		try (CloseableHttpResponse response = httpClient.execute(httpPut)) {
-			// 执行请求
-			if (response.getEntity() != null) {
-				return new HttpResult(response.getStatusLine().getStatusCode(),EntityUtils.toString(response.getEntity(), UTF_8));
-			}
-			return HttpResult.ENTITY_EMPTY;
-		}
-	}
+    public HttpResult doPost(String url, Map<String, String> param) throws Exception {
+        return doPost(url, param, null, null);
+    }
 
-	public HttpResult doPut(String url) throws Exception {
-		return this.doPut(url, null);
-	}
+    public HttpResult doPost(String url, List<Cookie> cookies) throws Exception {
+        return doPost(url, null, cookies, null);
+    }
 
-	public HttpResult doDelete(String url, Map<String, String> param) throws Exception {
-		param.put("_method", "DELETE");
-		return this.doPost(url, param);
-	}
+    public HttpResult doPost(String url, Map<String, String> param, List<Cookie> cookies) throws Exception {
+        return doPost(url, param, cookies, null);
 
-	public HttpResult doDelete(String url) throws IOException {
-		// 创建http DELETE请求
-		HttpDelete httpDelete = new HttpDelete(url);
-		httpDelete.setConfig(this.requestConfig);
-		try (CloseableHttpResponse response = httpClient.execute(httpDelete)) {
-			// 执行请求
-			if (response.getEntity() != null) {
-				return new HttpResult(response.getStatusLine().getStatusCode(),EntityUtils.toString(response.getEntity(), UTF_8));
-			}
-			return HttpResult.ENTITY_EMPTY;
-		}
-	}
+    }
 
-	/**
-	 * 设置Entity数据
-	 *
-	 * @param param                          参数
-	 * @param httpEntityEnclosingRequestBase httpclient
-	 */
-	private void setEntityData(Map<String, String> param,HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {
-		if (param == null || param.isEmpty()) {
-			return;
-		}
-		List<NameValuePair> parameters = new ArrayList<>();
-		param.forEach((k, v) -> parameters.add(new BasicNameValuePair(k, v)));
-		// 构造一个form表单式的实体
-		UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(parameters, UTF_8);
-		// 将请求实体设置到httpPost对象中
-		httpEntityEnclosingRequestBase.setEntity(formEntity);
-	}
+    public HttpResult doPost(String url, FileOutputStream fileOutputStream) throws Exception {
+        return doPost(url, null, null, fileOutputStream);
+    }
 
-	private void setCookies(List<Cookie> cookies, HttpRequestBase httpRequestBase) {
-		if (cookies == null || cookies.isEmpty()) {
-			return;
-		}
-		StringBuilder cookieStr = new StringBuilder();
-		cookies.forEach(cookie -> cookieStr.append("; ").append(cookie.getName()).append("=").append(cookie.getValue()));
-		httpRequestBase.setHeader("Cookie", cookieStr.substring(2));
+    public HttpResult doPost(String url, Map<String, String> param, List<Cookie> cookies, FileOutputStream fileOutputStream) throws Exception {
 
-	}
+        HttpPost httpPost = new HttpPost(url);
+
+        setCookies(cookies, httpPost);
+
+        setEntityData(param, httpPost);
+
+        httpPost.setConfig(requestConfig);
+
+        if (fileOutputStream == null) {
+            return getHttpResult(httpPost);
+        } else {
+            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    outFile(fileOutputStream, response);
+                    return HttpResult.SUCCESS;
+                }
+                return HttpResult.getErrorHttpResult(response.getStatusLine().getStatusCode());
+            }
+        }
+    }
+
+    public HttpResult doPostFile(String url, Map<String, File> files) throws Exception {
+        return doPostFile(url, null, null, files);
+    }
+
+    public HttpResult doPostFile(String url, Map<String, String> param, Map<String, File> files) throws Exception {
+        return doPostFile(url, param, null, files);
+    }
+
+    public HttpResult doPostFile(String url, List<Cookie> cookies, Map<String, File> files) throws Exception {
+        return doPostFile(url, null, cookies, files);
+    }
+
+    public HttpResult doPostFile(String url, Map<String, String> params, List<Cookie> cookies, Map<String, File> files) throws Exception {
+
+        HttpPost httpPost = new HttpPost(url);
+
+        setCookies(cookies, httpPost);
+
+        MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+
+        if (files != null && !files.isEmpty()) {
+            for (Map.Entry<String, File> entry : files.entrySet()) {
+                multipartEntityBuilder.addBinaryBody(entry.getKey(), entry.getValue());
+            }
+        }
+
+        if (params != null && !params.isEmpty()) {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                multipartEntityBuilder.addTextBody(entry.getKey(), entry.getValue(), ContentType.TEXT_PLAIN.withCharset(UTF_8));
+            }
+        }
+        httpPost.setEntity(multipartEntityBuilder.build());
+
+        return getHttpResult(httpPost);
+
+    }
+
+
+    public HttpResult doPostJson(String url, Map<String, String> param) throws Exception {
+        return doPostJson(url, param, null);
+    }
+
+
+    public HttpResult doPostJson(String url, Map<String, String> param, List<Cookie> cookies) throws Exception {
+        // 创建http POST请求
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(this.requestConfig);
+        setCookies(cookies, httpPost);
+        setJsonEntity(param, httpPost);
+        return getHttpResult(httpPost);
+    }
+
+
+    public <T> T doPostJson(String url, Map<String, String> param, List<Cookie> cookies, Class<T> clazz) throws Exception {
+        // 创建http POST请求
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(this.requestConfig);
+        setCookies(cookies, httpPost);
+        setJsonEntity(param, httpPost);
+        try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+            // 执行请求
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK && response.getEntity() != null) {
+                return JSON.parseObject(EntityUtils.toString(response.getEntity(), UTF_8), clazz);
+            }
+        }
+        return null;
+    }
+
+
+    public HttpResult doPut(String url) throws Exception {
+        return doPut(url, null);
+    }
+
+    public HttpResult doPut(String url, Map<String, String> param) throws IOException {
+        // 创建http POST请求
+        HttpPut httpPut = new HttpPut(url);
+        httpPut.setConfig(this.requestConfig);
+
+        setEntityData(param, httpPut);
+
+        return getHttpResult(httpPut);
+    }
+
+
+    public HttpResult doPutJSON(String url, Map<String, String> param) throws Exception {
+        return doPostJson(url, param, null);
+    }
+
+
+    public HttpResult doDelete(String url, Map<String, String> param) throws Exception {
+        param.put("_method", "DELETE");
+        return doPost(url, param);
+    }
+
+    public HttpResult doDelete(String url) throws IOException {
+        // 创建http DELETE请求
+        HttpDelete httpDelete = new HttpDelete(url);
+        httpDelete.setConfig(this.requestConfig);
+        return getHttpResult(httpDelete);
+    }
+
+    /**
+     * 设置Entity数据
+     *
+     * @param param                          参数
+     * @param httpEntityEnclosingRequestBase httpclient
+     */
+    private void setEntityData(Map<String, String> param, HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {
+        if (param == null || param.isEmpty()) {
+            return;
+        }
+        List<NameValuePair> parameters = new ArrayList<>();
+
+        for (Map.Entry<String, String> entry : param.entrySet()) {
+            parameters.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+        // 构造一个form表单式的实体
+        UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(parameters, UTF_8);
+        // 将请求实体设置到httpPost对象中
+        httpEntityEnclosingRequestBase.setEntity(formEntity);
+    }
+
+    private void setCookies(List<Cookie> cookies, HttpRequestBase httpRequestBase) {
+        if (cookies == null || cookies.isEmpty()) {
+            return;
+        }
+        StringBuilder cookieStr = new StringBuilder();
+        for (Cookie cookie : cookies) {
+            cookieStr.append("; ").append(cookie.getName()).append("=").append(cookie.getValue());
+        }
+        httpRequestBase.setHeader("Cookie", cookieStr.substring(2));
+
+    }
+
+    private void setJsonEntity(Map<String, String> param, HttpPost httpPost) {
+        if (param != null) {
+            // 构造一个字符串的实体
+            StringEntity stringEntity = new StringEntity(JSON.toJSONString(param), ContentType.APPLICATION_JSON);
+            // 将请求实体设置到httpPost对象中
+            httpPost.setEntity(stringEntity);
+        }
+    }
+
+    private void outFile(FileOutputStream fileOutputStream, CloseableHttpResponse response) throws IOException {
+        InputStream inputStream = response.getEntity().getContent();
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+        byte[] bs = new byte[1024];
+        int len;
+        while ((len = inputStream.read(bs)) != -1) {
+            bufferedOutputStream.write(bs, 0, len);
+        }
+        bufferedOutputStream.close();
+        inputStream.close();
+    }
+
+    private HttpResult getHttpResult(HttpRequestBase httpRequestBase) throws IOException {
+        try (CloseableHttpResponse response = httpClient.execute(httpRequestBase)) {
+            // 执行请求
+            if (response.getEntity() != null) {
+                return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), UTF_8));
+            }
+            return HttpResult.ENTITY_EMPTY;
+        }
+    }
 }
