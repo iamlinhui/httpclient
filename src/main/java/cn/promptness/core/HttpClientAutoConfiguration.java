@@ -1,4 +1,4 @@
-package com.promptness.core;
+package cn.promptness.core;
 
 import java.util.Arrays;
 
