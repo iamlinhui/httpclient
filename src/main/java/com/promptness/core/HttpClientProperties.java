@@ -1,11 +1,8 @@
 package com.promptness.core;
 
-import lombok.Data;
-
 /**
  * @author Lynn
  */
-@Data
 public class HttpClientProperties {
 
     private String agent = "agent";
@@ -17,4 +14,67 @@ public class HttpClientProperties {
     private Integer validateAfterInactivity = 1000;
     private Boolean expectContinueEnabled = true;
 
+    public String getAgent() {
+        return agent;
+    }
+
+    public void setAgent(String agent) {
+        this.agent = agent;
+    }
+
+    public Integer getMaxConnTotal() {
+        return maxConnTotal;
+    }
+
+    public void setMaxConnTotal(Integer maxConnTotal) {
+        this.maxConnTotal = maxConnTotal;
+    }
+
+    public Integer getMaxConnPerRoute() {
+        return maxConnPerRoute;
+    }
+
+    public void setMaxConnPerRoute(Integer maxConnPerRoute) {
+        this.maxConnPerRoute = maxConnPerRoute;
+    }
+
+    public Integer getConnectTimeOut() {
+        return connectTimeOut;
+    }
+
+    public void setConnectTimeOut(Integer connectTimeOut) {
+        this.connectTimeOut = connectTimeOut;
+    }
+
+    public Integer getConnectionRequestTimeout() {
+        return connectionRequestTimeout;
+    }
+
+    public void setConnectionRequestTimeout(Integer connectionRequestTimeout) {
+        this.connectionRequestTimeout = connectionRequestTimeout;
+    }
+
+    public Integer getSocketTimeOut() {
+        return socketTimeOut;
+    }
+
+    public void setSocketTimeOut(Integer socketTimeOut) {
+        this.socketTimeOut = socketTimeOut;
+    }
+
+    public Integer getValidateAfterInactivity() {
+        return validateAfterInactivity;
+    }
+
+    public void setValidateAfterInactivity(Integer validateAfterInactivity) {
+        this.validateAfterInactivity = validateAfterInactivity;
+    }
+
+    public Boolean getExpectContinueEnabled() {
+        return expectContinueEnabled;
+    }
+
+    public void setExpectContinueEnabled(Boolean expectContinueEnabled) {
+        this.expectContinueEnabled = expectContinueEnabled;
+    }
 }
