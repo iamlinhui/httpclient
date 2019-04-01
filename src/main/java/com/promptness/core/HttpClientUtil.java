@@ -129,9 +129,7 @@ public class HttpClientUtil {
     public HttpResult doPost(String url, Map<String, String> param, List<Cookie> cookies, FileOutputStream fileOutputStream) throws Exception {
 
         HttpPost httpPost = new HttpPost(url);
-
         setCookies(cookies, httpPost);
-
         setEntityData(param, httpPost);
 
         httpPost.setConfig(requestConfig);
@@ -162,9 +160,7 @@ public class HttpClientUtil {
     }
 
     public HttpResult doPostFile(String url, Map<String, String> params, List<Cookie> cookies, Map<String, File> files) throws Exception {
-
         HttpPost httpPost = new HttpPost(url);
-
         setCookies(cookies, httpPost);
 
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
@@ -193,7 +189,6 @@ public class HttpClientUtil {
 
 
     public HttpResult doPostJson(String url, Map<String, String> param, List<Cookie> cookies) throws Exception {
-        // 创建http POST请求
         HttpPost httpPost = new HttpPost(url);
         httpPost.setConfig(this.requestConfig);
         setCookies(cookies, httpPost);
@@ -203,7 +198,6 @@ public class HttpClientUtil {
 
 
     public <T> T doPostJson(String url, Map<String, String> param, List<Cookie> cookies, Class<T> clazz) throws Exception {
-        // 创建http POST请求
         HttpPost httpPost = new HttpPost(url);
         httpPost.setConfig(this.requestConfig);
         setCookies(cookies, httpPost);
@@ -223,20 +217,24 @@ public class HttpClientUtil {
     }
 
     public HttpResult doPut(String url, Map<String, String> param) throws IOException {
-        // 创建http POST请求
         HttpPut httpPut = new HttpPut(url);
         httpPut.setConfig(this.requestConfig);
-
         setEntityData(param, httpPut);
-
         return getHttpResult(httpPut);
     }
 
 
-    public HttpResult doPutJSON(String url, Map<String, String> param) throws Exception {
-        return doPostJson(url, param, null);
+    public HttpResult doPutJSON(String url, Map<String, String> param) throws IOException {
+        return doPutJSON(url, param, null);
     }
 
+    public HttpResult doPutJSON(String url, Map<String, String> param, List<Cookie> cookies) throws IOException {
+        HttpPut httpPut = new HttpPut(url);
+        httpPut.setConfig(this.requestConfig);
+        setCookies(cookies, httpPut);
+        setJsonEntity(param, httpPut);
+        return getHttpResult(httpPut);
+    }
 
     public HttpResult doDelete(String url, Map<String, String> param) throws Exception {
         param.put("_method", "DELETE");
@@ -244,7 +242,6 @@ public class HttpClientUtil {
     }
 
     public HttpResult doDelete(String url) throws IOException {
-        // 创建http DELETE请求
         HttpDelete httpDelete = new HttpDelete(url);
         httpDelete.setConfig(this.requestConfig);
         return getHttpResult(httpDelete);
@@ -283,12 +280,12 @@ public class HttpClientUtil {
 
     }
 
-    private void setJsonEntity(Map<String, String> param, HttpPost httpPost) {
+    private void setJsonEntity(Map<String, String> param, HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {
         if (param != null) {
             // 构造一个字符串的实体
             StringEntity stringEntity = new StringEntity(JSON.toJSONString(param), ContentType.APPLICATION_JSON);
             // 将请求实体设置到httpPost对象中
-            httpPost.setEntity(stringEntity);
+            httpEntityEnclosingRequestBase.setEntity(stringEntity);
         }
     }
 
