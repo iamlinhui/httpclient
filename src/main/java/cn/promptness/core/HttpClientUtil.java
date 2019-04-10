@@ -58,6 +58,10 @@ public class HttpClientUtil {
         return doGet(url, null, cookies, null);
     }
 
+    public HttpResult doGet(String url, List<Cookie> cookies, FileOutputStream fileOutputStream) throws Exception {
+        return doGet(url, null, cookies, fileOutputStream);
+    }
+
     public HttpResult doGet(String url, Map<String, String> param) throws Exception {
         return doGet(url, param, null, null);
     }
