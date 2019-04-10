@@ -1,6 +1,7 @@
 package cn.promptness.core;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.CookieSpecs;
@@ -10,7 +11,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
-import com.google.common.collect.ImmutableList;
 
 /**
  * @author Lynn
@@ -18,11 +18,11 @@ import com.google.common.collect.ImmutableList;
 public class HttpClientAutoConfiguration {
 
 	private HttpClientProperties properties;
-	
+
 	public HttpClientAutoConfiguration(HttpClientProperties properties) {
 		this.properties = properties;
 	}
-	
+
 	public HttpClientAutoConfiguration() {
 		this.properties = new HttpClientProperties();
 	}
@@ -45,7 +45,7 @@ public class HttpClientAutoConfiguration {
 				.setConnectionRequestTimeout(properties.getConnectionRequestTimeout())
 				.setCookieSpec(CookieSpecs.DEFAULT).setExpectContinueEnabled(properties.getExpectContinueEnabled())
 				.setTargetPreferredAuthSchemes(Arrays.asList(AuthSchemes.NTLM, AuthSchemes.DIGEST))
-				.setProxyPreferredAuthSchemes(ImmutableList.of(AuthSchemes.BASIC)).build();
+				.setProxyPreferredAuthSchemes(Collections.singletonList(AuthSchemes.BASIC)).build();
 	}
 
 	/**
