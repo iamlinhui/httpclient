@@ -18,6 +18,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.*;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ import java.util.Map;
  */
 public class HttpClientUtil {
 
-    private final static Charset UTF_8 = Charset.forName("UTF-8");
+    private static final Charset UTF_8 = StandardCharsets.UTF_8;
 
     private final CloseableHttpClient httpClient;
 
