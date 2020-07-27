@@ -17,7 +17,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
  */
 public class HttpClientAutoConfiguration {
 
-	private HttpClientProperties properties;
+	private final HttpClientProperties properties;
 
 	public HttpClientAutoConfiguration(HttpClientProperties properties) {
 		this.properties = properties;
