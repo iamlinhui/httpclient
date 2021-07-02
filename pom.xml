@@ -77,11 +77,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/iamlinhui/repository</url>
-        </repository>
-    </distributionManagement>
 </project>
