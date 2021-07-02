@@ -1,6 +1,6 @@
-package cn.promptness.core;
+package cn.promptness.httpclient;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 
 /**
  * 返回前台数据类型
@@ -35,7 +35,7 @@ public class HttpResult {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this);
+        return new Gson().toJson(this);
     }
 
     public int getCode() {
@@ -63,7 +63,7 @@ public class HttpResult {
     }
 
     public <T> T getContent(Class<T> clazz) {
-        return JSON.parseObject(this.getMessage(), clazz);
+        return new Gson().fromJson(this.getMessage(), clazz);
     }
 
 

@@ -1,6 +1,6 @@
-package cn.promptness.core;
+package cn.promptness.httpclient;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -210,7 +210,7 @@ public class HttpClientUtil {
         try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
             // 执行请求
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK && response.getEntity() != null) {
-                return JSON.parseObject(EntityUtils.toString(response.getEntity(), UTF_8), clazz);
+                return new Gson().fromJson(EntityUtils.toString(response.getEntity(), UTF_8), clazz);
             }
         }
         return null;
@@ -288,7 +288,7 @@ public class HttpClientUtil {
     private void setJsonEntity(Map<String, String> param, HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {
         if (param != null) {
             // 构造一个字符串的实体
-            StringEntity stringEntity = new StringEntity(JSON.toJSONString(param), ContentType.APPLICATION_JSON);
+            StringEntity stringEntity = new StringEntity(new Gson().toJson(param), ContentType.APPLICATION_JSON);
             // 将请求实体设置到httpPost对象中
             httpEntityEnclosingRequestBase.setEntity(stringEntity);
         }
