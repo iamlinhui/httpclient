@@ -1,17 +1,39 @@
 ```xml
-<plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-shade-plugin</artifactId>
-	<version>2.2</version>
-	<configuration>
-	</configuration>
-	<executions>
-		<execution>
-			<phase>package</phase>
-			<goals>
-				<goal>shade</goal>
-			</goals>
-		</execution>
-	</executions>
-</plugin>
+<plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+        </configuration>
+        <executions>
+            <execution>
+                <phase>package</phase>
+                <goals>
+                    <goal>shade</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+    <!--配置生成Javadoc包-->
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.4</version>
+        <configuration>
+            <encoding>UTF-8</encoding>
+            <aggregate>true</aggregate>
+            <charset>UTF-8</charset>
+            <docencoding>UTF-8</docencoding>
+        </configuration>
+        <executions>
+            <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                    <goal>jar</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+</plugins>
 ```
