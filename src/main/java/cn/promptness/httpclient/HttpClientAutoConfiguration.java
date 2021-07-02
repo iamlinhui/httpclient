@@ -1,4 +1,4 @@
-package cn.promptness.core;
+package cn.promptness.httpclient;
 
 import java.util.Arrays;
 import java.util.Collections;

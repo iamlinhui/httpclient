@@ -1,4 +1,4 @@
-package cn.promptness.core;
+package cn.promptness.httpclient;
 
 import com.google.gson.Gson;
 import org.apache.http.HttpStatus;

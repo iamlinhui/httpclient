@@ -1,4 +1,4 @@
-package cn.promptness.core;
+package cn.promptness.httpclient;
 
 /**
  * @author Lynn
