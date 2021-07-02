@@ -1,6 +1,6 @@
 package cn.promptness.core;
 
-import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 
 /**
  * 返回前台数据类型
@@ -9,13 +9,13 @@ import com.alibaba.fastjson.JSON;
  */
 public class HttpResult {
 
-    public final static HttpResult DEFAULT = new HttpResult(0, "DEFAULT");
+    public static final HttpResult DEFAULT = new HttpResult(0, "DEFAULT");
 
-    public final static HttpResult ERROR = new HttpResult(500, "ERROR");
+    public static final HttpResult ERROR = new HttpResult(500, "ERROR");
 
-    public final static HttpResult SUCCESS = new HttpResult(200, "SUCCESS");
+    public static final HttpResult SUCCESS = new HttpResult(200, "SUCCESS");
 
-    public final static HttpResult ENTITY_EMPTY = new HttpResult(204, "ENTITY_EMPTY");
+    public static final HttpResult ENTITY_EMPTY = new HttpResult(204, "ENTITY_EMPTY");
 
     private int code;
     private String message;
@@ -35,7 +35,7 @@ public class HttpResult {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this);
+        return new Gson().toJson(this);
     }
 
     public int getCode() {
@@ -63,7 +63,7 @@ public class HttpResult {
     }
 
     public <T> T getContent(Class<T> clazz) {
-        return JSON.parseObject(this.getMessage(), clazz);
+        return new Gson().fromJson(this.getMessage(), clazz);
     }
 
 
