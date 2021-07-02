@@ -1,6 +1,10 @@
 package cn.promptness.httpclient;
 
 import com.google.gson.Gson;
+import org.apache.http.Header;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 返回前台数据类型
@@ -19,10 +23,17 @@ public class HttpResult {
 
     private int code;
     private String message;
+    private Header[] headers;
 
     public HttpResult(int code, String message) {
         this.code = code;
         this.message = message;
+    }
+
+    public HttpResult(int code, String message, Header[] headers) {
+        this.code = code;
+        this.message = message;
+        this.headers = headers;
     }
 
     public static HttpResult getErrorHttpResult(String message) {
@@ -66,5 +77,24 @@ public class HttpResult {
         return new Gson().fromJson(this.getMessage(), clazz);
     }
 
+    public Header[] getHeaders() {
+        return headers;
+    }
 
+    public void setHeaders(Header[] headers) {
+        this.headers = headers;
+    }
+
+    public List<Header> getHeaderList(final String name) {
+        List<Header> headersFound = new ArrayList<>();
+        if (headers == null || headers.length == 0) {
+            return headersFound;
+        }
+        for (final Header header : this.headers) {
+            if (header.getName().equalsIgnoreCase(name)) {
+                headersFound.add(header);
+            }
+        }
+        return headersFound;
+    }
 }

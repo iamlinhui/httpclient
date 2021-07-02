@@ -96,9 +96,7 @@ public class HttpClientUtil {
         httpGet.setConfig(requestConfig);
 
         if (fileOutputStream == null) {
-            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-                return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), UTF_8));
-            }
+            return getHttpResult(httpGet);
         } else {
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
@@ -310,7 +308,7 @@ public class HttpClientUtil {
         try (CloseableHttpResponse response = httpClient.execute(httpRequestBase)) {
             // 执行请求
             if (response.getEntity() != null) {
-                return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), UTF_8));
+                return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), UTF_8), response.getAllHeaders());
             }
             return HttpResult.ENTITY_EMPTY;
         }
