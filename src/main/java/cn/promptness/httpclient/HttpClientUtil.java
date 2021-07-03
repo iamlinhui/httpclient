@@ -59,8 +59,8 @@ public class HttpClientUtil {
         return doGet(url, null, cookies, null);
     }
 
-    public HttpResult doGet(String url, List<Cookie> cookies, FileOutputStream fileOutputStream) throws Exception {
-        return doGet(url, null, cookies, fileOutputStream);
+    public HttpResult doGet(String url, List<Cookie> cookies, OutputStream outputStream) throws Exception {
+        return doGet(url, null, cookies, outputStream);
     }
 
     public HttpResult doGet(String url, Map<String, String> param) throws Exception {
@@ -71,15 +71,15 @@ public class HttpClientUtil {
         return doGet(url, param, cookies, null);
     }
 
-    public HttpResult doGet(String url, FileOutputStream fileOutputStream) throws Exception {
-        return doGet(url, null, null, fileOutputStream);
+    public HttpResult doGet(String url, OutputStream outputStream) throws Exception {
+        return doGet(url, null, null, outputStream);
     }
 
-    public HttpResult doGet(String url, Map<String, String> param, FileOutputStream fileOutputStream) throws Exception {
-        return doGet(url, param, null, fileOutputStream);
+    public HttpResult doGet(String url, Map<String, String> param, OutputStream outputStream) throws Exception {
+        return doGet(url, param, null, outputStream);
     }
 
-    public HttpResult doGet(String url, Map<String, String> param, List<Cookie> cookies, FileOutputStream fileOutputStream) throws Exception {
+    public HttpResult doGet(String url, Map<String, String> param, List<Cookie> cookies, OutputStream outputStream) throws Exception {
 
         URIBuilder builder = new URIBuilder(url);
         if (param != null && !param.isEmpty()) {
@@ -95,12 +95,12 @@ public class HttpClientUtil {
         setCookies(cookies, httpGet);
         httpGet.setConfig(requestConfig);
 
-        if (fileOutputStream == null) {
+        if (outputStream == null) {
             return getHttpResult(httpGet);
         } else {
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                    outFile(fileOutputStream, response);
+                    outFile(outputStream, response);
                 }
             }
             return HttpResult.SUCCESS;
@@ -125,11 +125,11 @@ public class HttpClientUtil {
 
     }
 
-    public HttpResult doPost(String url, FileOutputStream fileOutputStream) throws Exception {
-        return doPost(url, null, null, fileOutputStream);
+    public HttpResult doPost(String url, OutputStream outputStream) throws Exception {
+        return doPost(url, null, null, outputStream);
     }
 
-    public HttpResult doPost(String url, Map<String, String> param, List<Cookie> cookies, FileOutputStream fileOutputStream) throws Exception {
+    public HttpResult doPost(String url, Map<String, String> param, List<Cookie> cookies, OutputStream outputStream) throws Exception {
 
         HttpPost httpPost = new HttpPost(url);
         setCookies(cookies, httpPost);
@@ -137,12 +137,12 @@ public class HttpClientUtil {
 
         httpPost.setConfig(requestConfig);
 
-        if (fileOutputStream == null) {
+        if (outputStream == null) {
             return getHttpResult(httpPost);
         } else {
             try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
                 if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                    outFile(fileOutputStream, response);
+                    outFile(outputStream, response);
                     return HttpResult.SUCCESS;
                 }
                 return HttpResult.getErrorHttpResult(response.getStatusLine().getStatusCode());
@@ -292,9 +292,9 @@ public class HttpClientUtil {
         }
     }
 
-    private void outFile(FileOutputStream fileOutputStream, CloseableHttpResponse response) throws IOException {
+    private void outFile(OutputStream outputStream, CloseableHttpResponse response) throws IOException {
         InputStream inputStream = response.getEntity().getContent();
-        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
         byte[] bs = new byte[1024];
         int len;
         while ((len = inputStream.read(bs)) != -1) {
