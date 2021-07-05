@@ -3,6 +3,7 @@ package cn.promptness.httpclient;
 import com.google.gson.Gson;
 import org.apache.http.Header;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +76,17 @@ public class HttpResult {
 
     public <T> T getContent(Class<T> clazz) {
         return new Gson().fromJson(this.getMessage(), clazz);
+    }
+
+    /**
+     * new TypeToken<List<Student>>(){}.getType();
+     *
+     * @author lynn
+     * @date 2021/7/5 15:55
+     * @since v1.0.0
+     */
+    public <T> T getContent(Type typeOfT) {
+        return new Gson().fromJson(this.getMessage(), typeOfT);
     }
 
     public Header[] getHeaders() {
