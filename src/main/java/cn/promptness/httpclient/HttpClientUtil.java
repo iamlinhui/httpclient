@@ -1,6 +1,8 @@
 package cn.promptness.httpclient;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -286,7 +288,8 @@ public class HttpClientUtil {
     private void setJsonEntity(Map<String, String> param, HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {
         if (param != null) {
             // 构造一个字符串的实体
-            StringEntity stringEntity = new StringEntity(new Gson().toJson(param), ContentType.APPLICATION_JSON);
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            StringEntity stringEntity = new StringEntity(gson.toJson(param), ContentType.APPLICATION_JSON);
             // 将请求实体设置到httpPost对象中
             httpEntityEnclosingRequestBase.setEntity(stringEntity);
         }
@@ -308,7 +311,9 @@ public class HttpClientUtil {
         try (CloseableHttpResponse response = httpClient.execute(httpRequestBase)) {
             // 执行请求
             if (response.getEntity() != null) {
-                return new HttpResult(response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), UTF_8), response.getAllHeaders());
+                // unicode解码
+                String message = StringEscapeUtils.unescapeJava(EntityUtils.toString(response.getEntity(), UTF_8));
+                return new HttpResult(response.getStatusLine().getStatusCode(), message, response.getAllHeaders());
             }
             return HttpResult.ENTITY_EMPTY;
         }
