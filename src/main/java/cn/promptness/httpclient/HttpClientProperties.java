@@ -1,5 +1,7 @@
 package cn.promptness.httpclient;
 
+import org.apache.http.client.config.CookieSpecs;
+
 /**
  * @author Lynn
  */
@@ -13,6 +15,7 @@ public class HttpClientProperties {
     private Integer socketTimeOut = 50000;
     private Integer validateAfterInactivity = 1000;
     private Boolean expectContinueEnabled = true;
+    private String cookieSpecs = CookieSpecs.DEFAULT;
 
     public String getAgent() {
         return agent;
@@ -76,5 +79,13 @@ public class HttpClientProperties {
 
     public void setExpectContinueEnabled(Boolean expectContinueEnabled) {
         this.expectContinueEnabled = expectContinueEnabled;
+    }
+
+    public String getCookieSpecs() {
+        return cookieSpecs;
+    }
+
+    public void setCookieSpecs(String cookieSpecs) {
+        this.cookieSpecs = cookieSpecs;
     }
 }

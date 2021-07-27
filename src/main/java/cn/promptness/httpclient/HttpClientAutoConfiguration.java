@@ -43,7 +43,7 @@ public class HttpClientAutoConfiguration {
 		return RequestConfig.custom().setConnectTimeout(properties.getConnectTimeOut())
 				.setSocketTimeout(properties.getSocketTimeOut())
 				.setConnectionRequestTimeout(properties.getConnectionRequestTimeout())
-				.setCookieSpec(CookieSpecs.DEFAULT).setExpectContinueEnabled(properties.getExpectContinueEnabled())
+				.setCookieSpec(properties.getCookieSpecs()).setExpectContinueEnabled(properties.getExpectContinueEnabled())
 				.setTargetPreferredAuthSchemes(Arrays.asList(AuthSchemes.NTLM, AuthSchemes.DIGEST))
 				.setProxyPreferredAuthSchemes(Collections.singletonList(AuthSchemes.BASIC)).build();
 	}
