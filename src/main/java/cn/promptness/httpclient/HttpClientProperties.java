@@ -15,7 +15,7 @@ public class HttpClientProperties {
     private Integer socketTimeOut = 50000;
     private Integer validateAfterInactivity = 1000;
     private Boolean expectContinueEnabled = true;
-    private String cookieSpecs = CookieSpecs.DEFAULT;
+    private String cookieSpecs = CookieSpecs.IGNORE_COOKIES;
 
     public String getAgent() {
         return agent;
