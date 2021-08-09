@@ -296,15 +296,15 @@ public class HttpClientUtil {
     }
 
     private void outFile(OutputStream outputStream, CloseableHttpResponse response) throws IOException {
-        InputStream inputStream = response.getEntity().getContent();
-        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-        byte[] bs = new byte[1024];
-        int len;
-        while ((len = inputStream.read(bs)) != -1) {
-            bufferedOutputStream.write(bs, 0, len);
+        try (InputStream inputStream = response.getEntity().getContent()) {
+            try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+                byte[] bs = new byte[1024];
+                int len;
+                while ((len = inputStream.read(bs)) != -1) {
+                    bufferedOutputStream.write(bs, 0, len);
+                }
+            }
         }
-        bufferedOutputStream.close();
-        inputStream.close();
     }
 
     private HttpResult getHttpResult(HttpRequestBase httpRequestBase) throws IOException {
