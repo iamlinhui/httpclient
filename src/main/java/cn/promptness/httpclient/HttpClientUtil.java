@@ -188,12 +188,12 @@ public class HttpClientUtil {
     }
 
 
-    public HttpResult doPostJson(String url, Map<String, String> param) throws Exception {
+    public HttpResult doPostJson(String url, Object param) throws Exception {
         return doPostJson(url, param, null);
     }
 
 
-    public HttpResult doPostJson(String url, Map<String, String> param, List<Cookie> cookies) throws Exception {
+    public HttpResult doPostJson(String url, Object param, List<Cookie> cookies) throws Exception {
         HttpPost httpPost = new HttpPost(url);
         httpPost.setConfig(this.requestConfig);
         setCookies(cookies, httpPost);
@@ -202,7 +202,7 @@ public class HttpClientUtil {
     }
 
 
-    public <T> T doPostJson(String url, Map<String, String> param, List<Cookie> cookies, Class<T> clazz) throws Exception {
+    public <T> T doPostJson(String url, Object param, List<Cookie> cookies, Class<T> clazz) throws Exception {
         HttpPost httpPost = new HttpPost(url);
         httpPost.setConfig(this.requestConfig);
         setCookies(cookies, httpPost);
@@ -285,7 +285,7 @@ public class HttpClientUtil {
 
     }
 
-    private void setJsonEntity(Map<String, String> param, HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {
+    private void setJsonEntity(Object param, HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {
         if (param != null) {
             // 构造一个字符串的实体
             Gson gson = new GsonBuilder().disableHtmlEscaping().create();

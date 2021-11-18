@@ -60,7 +60,8 @@ public class HttpClientAutoConfiguration {
                 .setConnectionRequestTimeout(properties.getConnectionRequestTimeout())
                 .setCookieSpec(properties.getCookieSpecs()).setExpectContinueEnabled(properties.getExpectContinueEnabled())
                 .setTargetPreferredAuthSchemes(Arrays.asList(AuthSchemes.NTLM, AuthSchemes.DIGEST))
-                .setProxyPreferredAuthSchemes(Collections.singletonList(AuthSchemes.BASIC)).build();
+                .setProxyPreferredAuthSchemes(Collections.singletonList(AuthSchemes.BASIC))
+                .setRedirectsEnabled(properties.getRedirectsEnabled()).build();
     }
 
     /**

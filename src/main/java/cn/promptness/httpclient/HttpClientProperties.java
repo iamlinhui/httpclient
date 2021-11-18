@@ -16,6 +16,7 @@ public class HttpClientProperties {
     private Integer validateAfterInactivity = 1000;
     private Boolean expectContinueEnabled = true;
     private String cookieSpecs = CookieSpecs.IGNORE_COOKIES;
+    private boolean redirectsEnabled = true;
 
     public String getAgent() {
         return agent;
@@ -87,5 +88,13 @@ public class HttpClientProperties {
 
     public void setCookieSpecs(String cookieSpecs) {
         this.cookieSpecs = cookieSpecs;
+    }
+
+    public boolean getRedirectsEnabled() {
+        return redirectsEnabled;
+    }
+
+    public void setRedirectsEnabled(boolean redirectsEnabled) {
+        this.redirectsEnabled = redirectsEnabled;
     }
 }
