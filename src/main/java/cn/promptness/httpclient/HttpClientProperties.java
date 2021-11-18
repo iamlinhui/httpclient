@@ -16,7 +16,7 @@ public class HttpClientProperties {
     private Integer validateAfterInactivity = 1000;
     private Boolean expectContinueEnabled = true;
     private String cookieSpecs = CookieSpecs.IGNORE_COOKIES;
-    private boolean redirectsEnabled = true;
+    private boolean redirectsEnabled = false;
 
     public String getAgent() {
         return agent;
