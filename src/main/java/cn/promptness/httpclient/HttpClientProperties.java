@@ -17,6 +17,7 @@ public class HttpClientProperties {
     private Boolean expectContinueEnabled = true;
     private String cookieSpecs = CookieSpecs.IGNORE_COOKIES;
     private boolean redirectsEnabled = false;
+    private String ipLabel = "default";
 
     public String getAgent() {
         return agent;
@@ -96,5 +97,13 @@ public class HttpClientProperties {
 
     public void setRedirectsEnabled(boolean redirectsEnabled) {
         this.redirectsEnabled = redirectsEnabled;
+    }
+
+    public String getIpLabel() {
+        return ipLabel;
+    }
+
+    public void setIpLabel(String ipLabel) {
+        this.ipLabel = ipLabel;
     }
 }

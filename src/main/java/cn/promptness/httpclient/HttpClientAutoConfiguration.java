@@ -15,9 +15,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -25,7 +23,7 @@ import java.util.Map;
  */
 public class HttpClientAutoConfiguration {
 
-    private static final Map<String, String> LOCAL_IP_CACHE;
+    private static final Map<String, Map<String, String>> LOCAL_IP_CACHE = new LinkedHashMap<>();
 
     private final HttpClientProperties properties;
 
@@ -38,8 +36,8 @@ public class HttpClientAutoConfiguration {
     }
 
     static {
-        InputStream resource = ClassLoader.getSystemResourceAsStream("ip.yaml");
-        LOCAL_IP_CACHE = new Yaml().loadAs(resource, Map.class);
+        InputStream resource = ClassLoader.getSystemResourceAsStream("ip.yml");
+        LOCAL_IP_CACHE.putAll(new Yaml().load(resource));
     }
 
     /**
@@ -76,7 +74,7 @@ public class HttpClientAutoConfiguration {
                         .register("https", SSLConnectionSocketFactory.getSocketFactory())
                         .build(),
                 host -> {
-                    String ip = LOCAL_IP_CACHE.get(host);
+                    String ip = Optional.ofNullable(LOCAL_IP_CACHE.get(properties.getIpLabel())).orElse(new LinkedHashMap<>()).get(host);
                     if (StringUtils.isBlank(ip)) {
                         return InetAddress.getAllByName(host);
                     }
