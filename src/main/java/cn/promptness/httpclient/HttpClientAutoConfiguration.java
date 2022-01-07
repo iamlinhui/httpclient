@@ -35,6 +35,15 @@ public class HttpClientAutoConfiguration {
         this.properties = new HttpClientProperties();
     }
 
+    /*
+     * 在打成jar包时,使用ClassPathResource的getFile或者getPath之类的方式是不能获得结果的,但是可以使用classPathResource.getInputStream直接读取到
+     * class.getClassLoader().getResource()直接从resources目录下找,用的是相对路径,文件名（参数）前面不用加/
+     * class.getResource()是以resources为根目录的绝对路径,文件名（参数）前面需要加/
+     *
+     * @author lynn
+     * @date 2022/1/7 11:22
+     * @since v1.0.0
+     */
     static {
         InputStream resource = ClassLoader.getSystemResourceAsStream("ip.yml");
         LOCAL_IP_CACHE.putAll(new Yaml().load(resource));
