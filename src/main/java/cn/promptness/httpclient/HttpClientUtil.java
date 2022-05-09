@@ -100,12 +100,7 @@ public class HttpClientUtil {
         if (outputStream == null) {
             return getHttpResult(httpGet);
         } else {
-            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                    outFile(outputStream, response);
-                }
-            }
-            return HttpResult.SUCCESS;
+            return getHttpResult(httpGet, outputStream);
         }
     }
 
@@ -142,13 +137,7 @@ public class HttpClientUtil {
         if (outputStream == null) {
             return getHttpResult(httpPost);
         } else {
-            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                    outFile(outputStream, response);
-                    return HttpResult.SUCCESS;
-                }
-                return HttpResult.getErrorHttpResult(response.getStatusLine().getStatusCode());
-            }
+            return getHttpResult(httpPost, outputStream);
         }
     }
 
@@ -316,6 +305,16 @@ public class HttpClientUtil {
                 return new HttpResult(response.getStatusLine().getStatusCode(), message, response.getAllHeaders());
             }
             return HttpResult.ENTITY_EMPTY;
+        }
+    }
+
+    private HttpResult getHttpResult(HttpRequestBase httpRequestBase, OutputStream outputStream) throws IOException {
+        try (CloseableHttpResponse response = httpClient.execute(httpRequestBase)) {
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                outFile(outputStream, response);
+                return HttpResult.SUCCESS;
+            }
+            return HttpResult.getErrorHttpResult(response.getStatusLine().getStatusCode());
         }
     }
 }
