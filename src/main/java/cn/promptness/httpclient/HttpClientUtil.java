@@ -3,6 +3,7 @@ package cn.promptness.httpclient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -54,34 +55,34 @@ public class HttpClientUtil {
     }
 
     public HttpResult doGet(String url) throws Exception {
-        return doGet(url, null, null, null);
+        return doGet(url, null, null,null, null);
     }
 
     public HttpResult doGet(String url, List<Cookie> cookies) throws Exception {
-        return doGet(url, null, cookies, null);
+        return doGet(url, null, cookies, null, null);
     }
 
     public HttpResult doGet(String url, List<Cookie> cookies, OutputStream outputStream) throws Exception {
-        return doGet(url, null, cookies, outputStream);
+        return doGet(url, null, cookies, null, outputStream);
     }
 
     public HttpResult doGet(String url, Map<String, String> param) throws Exception {
-        return doGet(url, param, null, null);
+        return doGet(url, param, null, null, null);
     }
 
     public HttpResult doGet(String url, Map<String, String> param, List<Cookie> cookies) throws Exception {
-        return doGet(url, param, cookies, null);
+        return doGet(url, param, cookies, null, null);
     }
 
     public HttpResult doGet(String url, OutputStream outputStream) throws Exception {
-        return doGet(url, null, null, outputStream);
+        return doGet(url, null, null, null, outputStream);
     }
 
     public HttpResult doGet(String url, Map<String, String> param, OutputStream outputStream) throws Exception {
-        return doGet(url, param, null, outputStream);
+        return doGet(url, param, null, null, outputStream);
     }
 
-    public HttpResult doGet(String url, Map<String, String> param, List<Cookie> cookies, OutputStream outputStream) throws Exception {
+    public HttpResult doGet(String url, Map<String, String> param, List<Cookie> cookies, List<Header> headers, OutputStream outputStream) throws Exception {
 
         URIBuilder builder = new URIBuilder(url);
         if (param != null && !param.isEmpty()) {
@@ -95,6 +96,7 @@ public class HttpClientUtil {
         HttpGet httpGet = new HttpGet(uri.toString());
 
         setCookies(cookies, httpGet);
+        setHeaders(headers, httpGet);
         httpGet.setConfig(requestConfig);
 
         if (outputStream == null) {
@@ -103,6 +105,7 @@ public class HttpClientUtil {
             return getHttpResult(httpGet, outputStream);
         }
     }
+
 
 
     public HttpResult doPost(String url) throws Exception {
@@ -272,6 +275,16 @@ public class HttpClientUtil {
         }
         httpRequestBase.setHeader("Cookie", cookieStr.substring(2));
 
+    }
+
+
+    private void setHeaders(List<Header> headers, HttpRequestBase httpRequestBase) {
+        if (headers == null || headers.isEmpty()) {
+            return;
+        }
+        for (Header header : headers) {
+            httpRequestBase.setHeader(header);
+        }
     }
 
     private void setJsonEntity(Object param, HttpEntityEnclosingRequestBase httpEntityEnclosingRequestBase) {
