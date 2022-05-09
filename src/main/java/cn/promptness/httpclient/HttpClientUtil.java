@@ -55,7 +55,7 @@ public class HttpClientUtil {
     }
 
     public HttpResult doGet(String url) throws Exception {
-        return doGet(url, null, null,null, null);
+        return doGet(url, null, null, null, null);
     }
 
     public HttpResult doGet(String url, List<Cookie> cookies) throws Exception {
@@ -64,6 +64,10 @@ public class HttpClientUtil {
 
     public HttpResult doGet(String url, List<Cookie> cookies, OutputStream outputStream) throws Exception {
         return doGet(url, null, cookies, null, outputStream);
+    }
+
+    public HttpResult doGet(String url, OutputStream outputStream, List<Header> headers) throws Exception {
+        return doGet(url, null, null, headers, outputStream);
     }
 
     public HttpResult doGet(String url, Map<String, String> param) throws Exception {
@@ -105,7 +109,6 @@ public class HttpClientUtil {
             return getHttpResult(httpGet, outputStream);
         }
     }
-
 
 
     public HttpResult doPost(String url) throws Exception {
