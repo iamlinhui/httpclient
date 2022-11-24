@@ -16,6 +16,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.*;
+import java.util.function.Consumer;
 
 
 /**
@@ -45,8 +46,7 @@ public class HttpClientAutoConfiguration {
      * @since v1.0.0
      */
     static {
-        InputStream resource = ClassLoader.getSystemResourceAsStream("ip.yml");
-        LOCAL_IP_CACHE.putAll(new Yaml().load(resource));
+        Optional.ofNullable(ClassLoader.getSystemResourceAsStream("ip.yml")).ifPresent(resource -> LOCAL_IP_CACHE.putAll(new Yaml().load(resource)));
     }
 
     /**
