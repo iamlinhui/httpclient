@@ -2,7 +2,6 @@ package cn.promptness.httpclient;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -316,8 +315,8 @@ public class HttpClientUtil {
         try (CloseableHttpResponse response = httpClient.execute(httpRequestBase)) {
             // 执行请求
             if (response.getEntity() != null) {
-                // unicode解码
-                String message = StringEscapeUtils.unescapeJava(EntityUtils.toString(response.getEntity(), UTF_8));
+                // unicode解码 String message = StringEscapeUtils.unescapeJava(EntityUtils.toString(response.getEntity(), UTF_8))
+                String message = EntityUtils.toString(response.getEntity(), UTF_8);
                 return new HttpResult(response.getStatusLine().getStatusCode(), message, response.getAllHeaders());
             }
             return HttpResult.ENTITY_EMPTY;
