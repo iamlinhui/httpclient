@@ -13,10 +13,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.*;
-import java.util.function.Consumer;
 
 
 /**

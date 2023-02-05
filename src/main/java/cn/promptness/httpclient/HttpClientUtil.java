@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  * @author Lynn
@@ -271,12 +272,11 @@ public class HttpClientUtil {
         if (cookies == null || cookies.isEmpty()) {
             return;
         }
-        StringBuilder cookieStr = new StringBuilder();
+        StringJoiner stringJoiner = new StringJoiner("; ");
         for (Cookie cookie : cookies) {
-            cookieStr.append("; ").append(cookie.getName()).append("=").append(cookie.getValue());
+            stringJoiner.add(cookie.getName().concat("=").concat(cookie.getValue()));
         }
-        httpRequestBase.setHeader("Cookie", cookieStr.substring(2));
-
+        httpRequestBase.setHeader("Cookie", stringJoiner.toString());
     }
 
 
