@@ -196,6 +196,14 @@ public class HttpClientUtil {
         return getHttpResult(httpPost);
     }
 
+    public HttpResult doPostJson(String url, Object param, List<Cookie> cookies, List<Header> headers) throws Exception {
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(this.requestConfig);
+        setCookies(cookies, httpPost);
+        setHeaders(headers, httpPost);
+        setJsonEntity(param, httpPost);
+        return getHttpResult(httpPost);
+    }
 
     public <T> T doPostJson(String url, Object param, List<Cookie> cookies, Class<T> clazz) throws Exception {
         HttpPost httpPost = new HttpPost(url);
