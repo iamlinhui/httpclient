@@ -15,6 +15,17 @@ public class HttpClientProperties {
     private boolean redirectsEnabled = false;
     private String ipLabel = "default";
 
+    // 是否忽略 SSL 证书校验 (默认 false，生产环境建议 false，测试环境可设为 true)
+    private boolean sslIgnore = false;
+
+    public boolean isSslIgnore() {
+        return sslIgnore;
+    }
+
+    public void setSslIgnore(boolean sslIgnore) {
+        this.sslIgnore = sslIgnore;
+    }
+
     public String getAgent() {
         return agent;
     }
