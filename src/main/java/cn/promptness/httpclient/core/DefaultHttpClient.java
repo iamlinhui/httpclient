@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,7 @@ public class DefaultHttpClient {
                 if (entity != null) {
                     content = EntityUtils.toString(entity, StandardCharsets.UTF_8);
                 }
-                return new HttpResult(response.getStatusLine().getStatusCode(), content, response.getAllHeaders());
+                return new HttpResult(response.getStatusLine().getStatusCode(), content, Arrays.asList(response.getAllHeaders()));
             }
         } catch (Exception e) {
             return HttpResult.getErrorHttpResult(e.getMessage());
@@ -130,8 +131,8 @@ public class DefaultHttpClient {
         }
 
         if (req.getCookies() != null && !req.getCookies().isEmpty()) {
-            String cookieStr = req.getCookies().stream().map(c -> c.getName() + "=" + c.getValue()).collect(Collectors.joining("; "));
-            httpRequest.setHeader("Cookie", cookieStr);
+            String cookie = req.getCookies().entrySet().stream().map(c -> c.getKey() + "=" + c.getValue()).collect(Collectors.joining("; "));
+            httpRequest.setHeader("Cookie", cookie);
         }
 
         if (httpRequest instanceof HttpEntityEnclosingRequestBase) {

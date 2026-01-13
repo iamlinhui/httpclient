@@ -1,6 +1,7 @@
 package cn.promptness.httpclient.core;
 
 import cn.promptness.httpclient.HttpResult;
+import org.apache.http.Header;
 import org.apache.http.cookie.Cookie;
 
 import java.io.File;
@@ -8,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +23,8 @@ public class HttpRequest {
     private final String method;
 
     private Map<String, String> headers;
+    private Map<String, String> cookies;
     private Map<String, String> params;
-    private List<Cookie> cookies;
     private Map<String, File> files;
     private Object jsonBody;
 
@@ -35,35 +35,78 @@ public class HttpRequest {
     }
 
     // --- Builder Methods ---
+    public HttpRequest addHeader(Header header) {
+        return addHeader(header.getName(), header.getValue());
+    }
+
+    public HttpRequest addHeaders(List<Header> headers) {
+        headers.forEach(this::addHeader);
+        return this;
+    }
 
     public HttpRequest addHeader(String name, String value) {
-        if (this.headers == null) this.headers = new HashMap<>();
+        if (this.headers == null) {
+            this.headers = new HashMap<>();
+        }
         this.headers.put(name, value);
         return this;
     }
 
+    public HttpRequest addHeaders(Map<String, String> headers) {
+        if (this.headers == null) {
+            this.headers = new HashMap<>();
+        }
+        this.headers.putAll(headers);
+        return this;
+    }
+
     public HttpRequest addParam(String name, String value) {
-        if (this.params == null) this.params = new HashMap<>();
+        if (this.params == null) {
+            this.params = new HashMap<>();
+        }
         this.params.put(name, value);
         return this;
     }
 
     public HttpRequest addParams(Map<String, String> params) {
         if (params != null) {
-            if (this.params == null) this.params = new HashMap<>();
+            if (this.params == null) {
+                this.params = new HashMap<>();
+            }
             this.params.putAll(params);
         }
         return this;
     }
 
     public HttpRequest addCookie(Cookie cookie) {
-        if (this.cookies == null) this.cookies = new ArrayList<>();
-        this.cookies.add(cookie);
+        return addCookie(cookie.getName(), cookie.getValue());
+    }
+
+    public HttpRequest addCookies(List<Cookie> cookies) {
+        cookies.forEach(this::addCookie);
+        return this;
+    }
+
+    public HttpRequest addCookie(String name, String value) {
+        if (this.cookies == null) {
+            this.cookies = new HashMap<>();
+        }
+        this.cookies.put(name, value);
+        return this;
+    }
+
+    public HttpRequest addCookies(Map<String, String> cookies) {
+        if (this.cookies == null) {
+            this.cookies = new HashMap<>();
+        }
+        this.cookies.putAll(cookies);
         return this;
     }
 
     public HttpRequest addFile(String key, File file) {
-        if (this.files == null) this.files = new HashMap<>();
+        if (this.files == null) {
+            this.files = new HashMap<>();
+        }
         this.files.put(key, file);
         return this;
     }
@@ -134,7 +177,7 @@ public class HttpRequest {
         return params;
     }
 
-    public List<Cookie> getCookies() {
+    public Map<String, String> getCookies() {
         return cookies;
     }
 
