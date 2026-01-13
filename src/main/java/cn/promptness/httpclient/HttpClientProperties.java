@@ -2,12 +2,8 @@ package cn.promptness.httpclient;
 
 import org.apache.http.client.config.CookieSpecs;
 
-/**
- * @author Lynn
- */
 public class HttpClientProperties {
-
-    private String agent = "agent";
+    private String agent = "Mozilla/5.0";
     private Integer maxConnTotal = 200;
     private Integer maxConnPerRoute = 50;
     private Integer connectTimeOut = 10000;
