@@ -1,4 +1,4 @@
-# Promptness HttpClient
+# HttpClient
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![Java](https://img.shields.io/badge/Java-8%2B-blue)
@@ -67,4 +67,11 @@ props.setIpLabel("dev");  // 使用 ip.yml 中的 dev 环境 host 配置
 
 DefaultHttpClient client = new DefaultHttpClient(props);
 
+```
+
+```yaml
+stable:
+  api.example.com: 10.9.1.2
+prod:
+  api.example.com: 10.9.2.3
 ```
